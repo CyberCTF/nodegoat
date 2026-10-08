@@ -16,7 +16,7 @@ settings of its compose file baked in.
 
 ```bash
 isoloom generate
-isoloom up docker
+isoloom run docker
 ```
 
 Then open http://localhost:4000/ and log in as `user1` / `User1_123` (or `admin` / `Admin_123`).
