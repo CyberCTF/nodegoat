@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://www.isoloom.com/schema/v1.json
+# OWASP NodeGoat (by the OWASP NodeGoat contributors) as an Isoloom spec: the upstream source,
+# vendored unchanged in build/web/app/, built by its Dockerfile with the settings of its
+# docker-compose.yml baked in, and a MongoDB machine.
+# `isoloom generate`, then `isoloom up docker`.
+version: 1
+name: nodegoat
+
+networks:
+  lab: { cidr: 10.60.5.0/24, internet: false }
+
+machines:
+  mongo:
+    networks: { lab: 20 }
+    services: [{ port: 27017, name: mongodb }]
+    resources: { cpus: 1, memory_mb: 512 }
+    volumes: { data: /data/db }
+    docker:
+      image: mongo:4.4
+
+  web:
+    networks: { lab: 10 }
+    services: [{ port: 4000, name: web, http: true, publish: 4000 }]
+    resources: { cpus: 1, memory_mb: 512 }
+    depends_on: [mongo]
+    docker:
+      build: build/web
+
+checks:
+  - name: NodeGoat answers
+    http: http://web:4000/login
+    wait: 180
+  - name: the seeded user logs in (the database is reset)
+    script: checks/login.sh
+    wait: 120
+  - name: the tutorial is served
+    http: http://web:4000/tutorial
+    expect: any
+
+message: |
+  NodeGoat answers at http://localhost:{{ machines.web.services.0.publish }}/. Log in as
+  user1 / User1_123 (or admin / Admin_123); the tutorial at /tutorial walks through each OWASP
+  Top Ten item.

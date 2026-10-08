@@ -1,0 +1,7 @@
+app/Dockerfile
+app/docker-compose.yml
+app/.dockerignore
+app/.git
+app/.gitignore
+app/node_modules
+Dockerfile

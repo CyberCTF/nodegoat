@@ -1,0 +1,224 @@
+{
+  "generated_by_isoloom": "from isoloom.yml; don't edit: change the spec and run `isoloom generate` (`isoloom check` fails when this file is out of date)",
+  "resolved_version": 1,
+  "name": "nodegoat",
+  "instance": null,
+  "inputs": [],
+  "networks": {
+    "lab": {
+      "cidr": "10.60.5.0/24",
+      "docker_cidr": "10.60.5.0/24",
+      "internet": false,
+      "gateway": null,
+      "gateway_address": "10.60.5.1",
+      "router": null,
+      "controller": "10.60.5.253"
+    }
+  },
+  "reach": [],
+  "machines": {
+    "mongo": {
+      "access": false,
+      "supplied": false,
+      "shapes": [
+        "docker"
+      ],
+      "arch": "amd64",
+      "os": null,
+      "windows": false,
+      "addresses": {
+        "lab": "10.60.5.20"
+      },
+      "docker_addresses": {
+        "lab": "10.60.5.20"
+      },
+      "services": [
+        {
+          "port": 27017,
+          "name": "mongodb",
+          "http": false,
+          "publish": null
+        }
+      ],
+      "depends_on": [],
+      "inputs": [],
+      "volumes": {
+        "data": "/data/db"
+      },
+      "resources": {
+        "cpus": 1,
+        "memory_mb": 512,
+        "disk_gb": 20
+      },
+      "gateway_of": [],
+      "routes": [],
+      "default_gateway": null,
+      "offline": true
+    },
+    "web": {
+      "access": false,
+      "supplied": false,
+      "shapes": [
+        "docker"
+      ],
+      "arch": "amd64",
+      "os": null,
+      "windows": false,
+      "addresses": {
+        "lab": "10.60.5.10"
+      },
+      "docker_addresses": {
+        "lab": "10.60.5.10"
+      },
+      "services": [
+        {
+          "port": 4000,
+          "name": "web",
+          "http": true,
+          "publish": 4000
+        }
+      ],
+      "depends_on": [
+        "mongo"
+      ],
+      "inputs": [],
+      "volumes": {},
+      "resources": {
+        "cpus": 1,
+        "memory_mb": 512,
+        "disk_gb": 20
+      },
+      "gateway_of": [],
+      "routes": [],
+      "default_gateway": null,
+      "offline": true
+    }
+  },
+  "start_order": [
+    "mongo",
+    "web"
+  ],
+  "clones": {},
+  "tools": {},
+  "groups": {},
+  "router": null,
+  "controller": {
+    "addresses": {
+      "lab": "10.60.5.253"
+    }
+  },
+  "published": [
+    {
+      "machine": "web",
+      "port": 4000,
+      "host_port": 4000
+    }
+  ],
+  "targets": {
+    "possible": [
+      "docker",
+      "hosted",
+      "docker-vm",
+      "cloud-docker",
+      "kubernetes"
+    ],
+    "generated": [
+      "docker",
+      "hosted",
+      "docker-vm",
+      "cloud-docker",
+      "kubernetes"
+    ],
+    "refused": {},
+    "not_possible": {
+      "hybrid": "only when some machines are containers and others are VMs",
+      "vagrant": "needs `vm:` on mongo, web",
+      "proxmox": "needs `vm:` on mongo, web",
+      "cloud-vm": "needs `vm:` on mongo, web",
+      "external": "needs `external:` on mongo, web"
+    }
+  },
+  "checks": {
+    "default_position": "networks",
+    "positions": [
+      {
+        "position": "networks",
+        "machine": null,
+        "runner": "isoloom-check",
+        "checks": [
+          {
+            "name": "NodeGoat answers",
+            "derived": false,
+            "kind": "http",
+            "target": "http://web:4000/login",
+            "expect": "200",
+            "wait": 180
+          },
+          {
+            "name": "the seeded user logs in (the database is reset)",
+            "derived": false,
+            "kind": "script",
+            "target": "checks/login.sh",
+            "expect": "",
+            "wait": 120
+          },
+          {
+            "name": "the tutorial is served",
+            "derived": false,
+            "kind": "http",
+            "target": "http://web:4000/tutorial",
+            "expect": "any",
+            "wait": 30
+          }
+        ]
+      },
+      {
+        "position": "mongo",
+        "machine": "mongo",
+        "runner": "isoloom-check-mongo",
+        "checks": [
+          {
+            "name": "web:4000 from mongo",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.5.10:4000/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "no internet from mongo",
+            "derived": true,
+            "kind": "http",
+            "target": "http://1.1.1.1/",
+            "expect": "blocked",
+            "wait": 0
+          }
+        ]
+      },
+      {
+        "position": "web",
+        "machine": "web",
+        "runner": "isoloom-check-web",
+        "checks": [
+          {
+            "name": "mongo:27017 from web",
+            "derived": true,
+            "kind": "tcp",
+            "target": "10.60.5.20:27017",
+            "expect": "open",
+            "wait": 30
+          },
+          {
+            "name": "no internet from web",
+            "derived": true,
+            "kind": "http",
+            "target": "http://1.1.1.1/",
+            "expect": "blocked",
+            "wait": 0
+          }
+        ]
+      }
+    ]
+  },
+  "message": "NodeGoat answers at http://localhost:4000/. Log in as\nuser1 / User1_123 (or admin / Admin_123); the tutorial at /tutorial walks through each OWASP\nTop Ten item.\n"
+}
