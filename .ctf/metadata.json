@@ -4,6 +4,5 @@
   "question": "Exploit each OWASP Top Ten vulnerability the NodeGoat tutorial describes.",
   "category": "WEB",
   "difficulty": 2,
-  "evidence_kind": "SECRET",
-  "capabilities": ["nosql-injection", "server-side-javascript-injection", "cross-site-scripting", "broken-access-control", "csrf", "open-redirect"]
+  "evidence_kind": "SECRET"
 }
