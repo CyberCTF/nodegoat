@@ -37,6 +37,8 @@ services:
           memory: 512M
     labels:
       isoloom.service.mongodb: tcp:27017
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
     restart: unless-stopped
   mongo-routes:
     image: alpine:3.20
@@ -58,9 +60,15 @@ services:
       mongo:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
   web:
     build:
       context: ../../build/web
+      labels:
+        isoloom.managed: 'true'
+        isoloom.environment: nodegoat
     image: isoloom/nodegoat-web
     platform: linux/amd64
     hostname: web
@@ -96,6 +104,8 @@ services:
           memory: 512M
     labels:
       isoloom.service.web: http:4000
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
     restart: unless-stopped
   web-routes:
     image: alpine:3.20
@@ -117,6 +127,9 @@ services:
       web:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
   isoloom-check:
     image: curlimages/curl:8.11.1
     profiles:
@@ -142,6 +155,9 @@ services:
         condition: service_healthy
       web-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
   isoloom-check-mongo:
     image: curlimages/curl:8.11.1
     profiles:
@@ -161,6 +177,9 @@ services:
         condition: service_healthy
       web-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
   isoloom-check-web:
     image: curlimages/curl:8.11.1
     profiles:
@@ -180,6 +199,9 @@ services:
         condition: service_healthy
       web-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
   isoloom-probe-amd64:
     image: busybox:1.37.0-musl
     platform: linux/amd64
@@ -191,12 +213,24 @@ services:
     - isoloom-probe-amd64:/probe
     network_mode: none
     restart: no
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
 networks:
   lab:
     ipam:
       config:
       - subnet: 10.60.5.0/24
         gateway: 10.60.5.1
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
 volumes:
-  mongo-data: {}
-  isoloom-probe-amd64: {}
+  mongo-data:
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
+  isoloom-probe-amd64:
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: nodegoat
