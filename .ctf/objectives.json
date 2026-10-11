@@ -1,0 +1,35 @@
+{
+  "objectives": [
+    {
+      "key": "main",
+      "title": "Read the flag",
+      "prompt": "Log in to NodeGoat, get the server to execute JavaScript of your own, and read /ctf/flag.",
+      "check": { "evidence": "SECRET", "format": "FLAG{%s}" },
+      "dev": "FLAG{dev-nodegoat}",
+      "hints": [
+        "The tutorial's A1 Injection section covers a server-side flaw in one of the logged-in pages. Which page takes numbers from you?",
+        "Look at how the server turns those form values into numbers: which dangerous JavaScript function is involved?"
+      ],
+      "steps": [
+        {
+          "key": "page",
+          "title": "Find the page",
+          "prompt": "Which NodeGoat page stores the percentages you enter for your retirement plan?",
+          "check": { "answer": ["contributions", "contributions page", "/contributions"] }
+        },
+        {
+          "key": "function",
+          "title": "Find the sink",
+          "prompt": "Which JavaScript function does the server call on those form values?",
+          "check": { "answer": ["eval", "eval()"] }
+        },
+        {
+          "key": "class",
+          "title": "Name the flaw",
+          "prompt": "What is this vulnerability class called in the NodeGoat tutorial? (server-side ... injection)",
+          "check": { "answer": ["server-side javascript injection", "server side javascript injection", "ssjs injection", "ssji", "code injection"] }
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "title": "OWASP NodeGoat",
   "description": "A deliberately insecure Node.js and MongoDB retirement benefits application from OWASP, built to show how each OWASP Top Ten risk applies to Node.js web applications, with a tutorial explaining each one.",
-  "question": "Exploit each OWASP Top Ten vulnerability the NodeGoat tutorial describes.",
+  "question": "Use the server-side JavaScript injection on the Contributions page to run code on the server and read /ctf/flag.",
   "category": "WEB",
   "difficulty": 2,
   "evidence_kind": "SECRET"
